@@ -1,0 +1,20 @@
+# Ignore build results
+bin/
+obj/
+
+# User-specific files
+*.user
+*.vs/
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Rider and Visual Studio Code folders
+.idea/
+.vscode/
+
+# Sensitive configuration
+secrets.json
