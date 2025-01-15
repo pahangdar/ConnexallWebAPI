@@ -32,6 +32,20 @@ namespace WebAPI.Controllers
             return Ok(appointment);
         }
 
+        [HttpGet("by-date")]
+        public IActionResult GetAppointmentsByDate([FromQuery] DateTime date)
+        {
+            try
+            {
+                var appointments = _appointmentService.GetAppointmentsByDate(date);
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
         [HttpPost]
         public IActionResult Create([FromBody] AppointmentDTO appointmentDto)
         {

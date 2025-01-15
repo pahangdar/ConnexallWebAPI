@@ -39,7 +39,7 @@ namespace WebAPI.Services
             existingDoctor.LastName = doctor.LastName;
             existingDoctor.Specialization = doctor.Specialization;
             existingDoctor.PhoneNumber = doctor.PhoneNumber;
-            existingDoctor.Address = doctor.Address;
+            existingDoctor.Email = doctor.Email;
 
             _context.SaveChanges();
             return true;

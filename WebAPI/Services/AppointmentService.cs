@@ -31,15 +31,37 @@ namespace WebAPI.Services
                 .FirstOrDefault(a => a.AppointmentID == id);
         }
 
+        public IEnumerable<Appointment> GetAppointmentsByDate(DateTime selectedDate)
+        {
+            return _context.Appointments
+                .Where(a => a.Date.Date == selectedDate.Date)
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .ToList();
+        }
+
         public Appointment CreateAppointment(AppointmentDTO appointmentDto)
         {
+            // Fetch related Patient and Doctor from the database
+            var patient = _context.Patients.Find(appointmentDto.PatientID);
+            var doctor = _context.Doctors.Find(appointmentDto.DoctorID);
+
+            // Ensure Patient and Doctor exist
+            if (patient == null)
+                throw new ArgumentException($"Patient with ID {appointmentDto.PatientID} not found.");
+            if (doctor == null)
+                throw new ArgumentException($"Doctor with ID {appointmentDto.DoctorID} not found.");
+
+            // Create the Appointment
             var appointment = new Appointment
             {
                 Date = appointmentDto.Date,
                 Time = appointmentDto.Time,
                 Status = appointmentDto.Status,
                 PatientID = appointmentDto.PatientID,
-                DoctorID = appointmentDto.DoctorID
+                DoctorID = appointmentDto.DoctorID,
+                Patient = patient,
+                Doctor = doctor
             };
 
             _context.Appointments.Add(appointment);
