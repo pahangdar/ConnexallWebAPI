@@ -33,33 +33,46 @@ namespace WebAPI.Services
 
         public IEnumerable<Appointment> GetAppointmentsByDate(DateTime selectedDate)
         {
+            var selectedDateOnly = DateOnly.FromDateTime(selectedDate);
+
             return _context.Appointments
-                .Where(a => a.Date.Date == selectedDate.Date)
+                .Where(a => a.Date == selectedDateOnly)
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
+                //.Select(a => new AppointmentDTO
+                //{
+                //    AppointmentID = a.AppointmentID,
+                //    Date = a.Date,
+                //    Time = a.Time,
+                //    Status = a.Status,
+                //    PatientID = a.PatientID,
+                //    DoctorID = a.DoctorID,
+                //    PatientFullName = a.Patient.FullName,
+                //    DoctorFullName = a.Doctor.FullName
+                //})
                 .ToList();
         }
 
-        public Appointment CreateAppointment(AppointmentDTO appointmentDto)
+        public Appointment CreateAppointment(AppointmentCreateDTO appointmentCreateDto)
         {
             // Fetch related Patient and Doctor from the database
-            var patient = _context.Patients.Find(appointmentDto.PatientID);
-            var doctor = _context.Doctors.Find(appointmentDto.DoctorID);
+            var patient = _context.Patients.Find(appointmentCreateDto.PatientID);
+            var doctor = _context.Doctors.Find(appointmentCreateDto.DoctorID);
 
             // Ensure Patient and Doctor exist
             if (patient == null)
-                throw new ArgumentException($"Patient with ID {appointmentDto.PatientID} not found.");
+                throw new ArgumentException($"Patient with ID {appointmentCreateDto.PatientID} not found.");
             if (doctor == null)
-                throw new ArgumentException($"Doctor with ID {appointmentDto.DoctorID} not found.");
+                throw new ArgumentException($"Doctor with ID {appointmentCreateDto.DoctorID} not found.");
 
             // Create the Appointment
             var appointment = new Appointment
             {
-                Date = appointmentDto.Date,
-                Time = appointmentDto.Time,
-                Status = appointmentDto.Status,
-                PatientID = appointmentDto.PatientID,
-                DoctorID = appointmentDto.DoctorID,
+                Date = appointmentCreateDto.Date,
+                Time = appointmentCreateDto.Time,
+                Status = appointmentCreateDto.Status,
+                PatientID = appointmentCreateDto.PatientID,
+                DoctorID = appointmentCreateDto.DoctorID,
                 Patient = patient,
                 Doctor = doctor
             };
@@ -69,16 +82,27 @@ namespace WebAPI.Services
             return appointment;
         }
 
-        public bool UpdateAppointment(int id, AppointmentDTO appointmentDto)
+        public bool UpdateAppointment(int id, AppointmentCreateDTO appointmentCreateDto)
         {
             var appointment = _context.Appointments.Find(id);
             if (appointment == null) return false;
 
-            appointment.Date = appointmentDto.Date;
-            appointment.Time = appointmentDto.Time;
-            appointment.Status = appointmentDto.Status;
-            appointment.PatientID = appointmentDto.PatientID;
-            appointment.DoctorID = appointmentDto.DoctorID;
+            appointment.Date = appointmentCreateDto.Date;
+            appointment.Time = appointmentCreateDto.Time;
+            appointment.Status = appointmentCreateDto.Status;
+            appointment.PatientID = appointmentCreateDto.PatientID;
+            appointment.DoctorID = appointmentCreateDto.DoctorID;
+
+            _context.SaveChanges();
+            return true;
+        }
+
+        public bool UpdateAppointmentStatus(int id, string status)
+        {
+            var appointment = _context.Appointments.Find(id);
+            if (appointment == null) return false;
+
+            appointment.Status = status;
 
             _context.SaveChanges();
             return true;

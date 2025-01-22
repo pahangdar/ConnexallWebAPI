@@ -2,6 +2,7 @@
 using WebAPI.Services;
 using WebAPI.Models;
 using WebAPI.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAPI.Controllers
 {
@@ -46,15 +47,29 @@ namespace WebAPI.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult Create([FromBody] AppointmentDTO appointmentDto)
+        [HttpGet("date/{date}")]
+        public IActionResult GetAppointmentsByDate2(DateTime date)
         {
-            var createdAppointment = _appointmentService.CreateAppointment(appointmentDto);
+            try
+            {
+                var appointments = _appointmentService.GetAppointmentsByDate(date);
+                return Ok(appointments);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromBody] AppointmentCreateDTO appointmentCreateDto)
+        {
+            var createdAppointment = _appointmentService.CreateAppointment(appointmentCreateDto);
             return CreatedAtAction(nameof(GetById), new { id = createdAppointment.AppointmentID }, createdAppointment);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] AppointmentDTO appointmentDto)
+        public IActionResult Update(int id, [FromBody] AppointmentCreateDTO appointmentDto)
         {
             var updated = _appointmentService.UpdateAppointment(id, appointmentDto);
             if (!updated)
@@ -77,5 +92,15 @@ namespace WebAPI.Controllers
             var appointments = _appointmentService.GetAppointmentsByStatus(status);
             return Ok(appointments);
         }
+
+        [HttpPut("status/{id}")]
+        public IActionResult UpdateStatus(int id, [FromQuery] string status)
+        {
+            var updated = _appointmentService.UpdateAppointmentStatus(id, status);
+            if (!updated)
+                return NotFound();
+            return NoContent();
+        }
+
     }
 }

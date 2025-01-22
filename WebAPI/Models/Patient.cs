@@ -1,4 +1,6 @@
-﻿namespace WebAPI.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace WebAPI.Models
 {
     public class Patient
     {
@@ -9,5 +11,6 @@
         public string? Address { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string? Email { get; set; }
+        public string FullName => $"{FirstName ?? ""} {LastName ?? ""}".Trim();
     }
 }
