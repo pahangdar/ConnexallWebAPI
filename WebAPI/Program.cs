@@ -7,7 +7,7 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services
-builder.Services.AddSingleton<ITokenService, TokenService>();
+//builder.Services.AddSingleton<ITokenService, TokenService>();
 // Add services to the container.
 builder.Services.AddControllers(); // Add controller services
 builder.Services.AddEndpointsApiExplorer(); // Enable endpoint discovery
@@ -42,7 +42,7 @@ builder.Services.AddSwaggerGen(options =>
 
 // Configure Entity Framework with MS-SQL
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register custom services for dependency injection
 builder.Services.AddScoped<AppointmentService>();

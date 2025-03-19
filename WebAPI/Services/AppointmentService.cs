@@ -39,6 +39,7 @@ namespace WebAPI.Services
                 .Where(a => a.Date == selectedDateOnly)
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
+                .OrderBy(a => a.Time)
                 //.Select(a => new AppointmentDTO
                 //{
                 //    AppointmentID = a.AppointmentID,

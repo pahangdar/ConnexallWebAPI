@@ -7,7 +7,6 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class PatientsController : ControllerBase
     {
         private readonly PatientService _patientService;
